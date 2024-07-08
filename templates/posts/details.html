@@ -11,10 +11,19 @@
     on {{ post.friendly_date }}
   </i></p>
 
+  {% if post.tags %}
+  <p>
+    <b>Tags:</b>
+    {% for tag in post.tags %}
+      <a href="/tags/{{ tag.id }}" class="badge bg-primary">{{ tag.name }}</a>
+    {% endfor %}
+  </p>
+  {% endif %}
+
 <form>
   <button class="btn btn-outline-primary"
           formmethod="GET"
-          formaction="/users/{{ post.user_id }}">Cancel</button>
+          formaction="/users/{{ post.user_code }}">Cancel</button>
   <button class="btn btn-primary"
           formmethod="GET"
           formaction="/posts/{{ post.id }}/edit">Edit</button>

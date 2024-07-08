@@ -1,6 +1,7 @@
 """Models for Blogly."""
 
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import joinedload
 from sqlalchemy.sql import func
 
 db = SQLAlchemy()
@@ -50,7 +51,7 @@ class Post(db.Model):
 
     def __repr__(self):
         p = self
-        return f"<Post Id={p.id} Title={p.title} Content={p.content} Created at={p.time} FK={p.user}>"
+        return f"<Post Id={p.id} Title={p.title} Content={p.content} Created at={p.created_at} FK={p.user}>"
     
     id = db.Column(db.Integer,
                    primary_key=True,
@@ -69,3 +70,37 @@ class Post(db.Model):
         """Return nicely-formatted date."""
 
         return self.created_at.strftime("%a %b %-d  %Y, %-I:%M %p")
+    
+class PostTag(db.Model):
+    """Connects posts to tags Many-to-Many relationship."""
+
+    __tablename__ = 'posts_tags'
+
+    post_id = db.Column(db.Integer,
+                        db.ForeignKey('posts.id'),
+                        primary_key=True,
+                        nullable=False
+                        )
+    tag_id = db.Column(db.Integer,
+                        db.ForeignKey('tags.id'),
+                        primary_key=True,
+                        nullable=False)
+
+class Tag(db.Model):
+    """Tag."""
+
+    __tablename__ = 'tags'
+
+    def __repr__(self):
+        p = self
+        return f"<Tag Id= {p.id}, Name = {p.name}>"
+
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    name = db.Column(db.String(20), unique=True, nullable=False)
+
+    posts = db.relationship(
+        'Post',
+        secondary="posts_tags",
+        cascade="all,delete",
+        backref="tags",
+    )
